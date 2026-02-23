@@ -31,6 +31,18 @@ subnets_x = {
     map_public_ip_on_launch = false
     name = "backend-subnet"    
   }
+   "db-1" = {
+    cidr_block = "10.0.5.0/24"
+    availability_zone = "ap-south-1c"
+    map_public_ip_on_launch = false
+    name = "db-subnet1"    
+  }
+     "db-2" = {
+    cidr_block = "10.0.6.0/24"
+    availability_zone = "ap-south-1a"
+    map_public_ip_on_launch = false
+    name = "db-subnet2"    
+  }
 }
 bastion_hosts_x = {
   "bastion-host" = {
@@ -86,6 +98,12 @@ sg_x = {
       Name = "backend-sg"
     }
   }
+    "db-sg" = {
+    name = "db-sg"
+    tags = {
+      Name = "db-sg"
+    }
+  }
 }
 
 alb_sg_x = {
@@ -125,13 +143,82 @@ public_subnet_assoc_x = {
   }
 }
 albgw_x = {
-  "alb" = {
-    name = "jay-alb"
+  "alb1" = {
+    name = "frontend-alb"
     subnet_keys = ["public_1a", "public_1b"]
     load_balancer_type = "application"
+    tags = {
+      Name = "frontend-alb"
+    }
+  }
+  "alb2" = {
+    name = "backend-alb"
+    subnet_keys = ["public_1a", "backend"]
+    load_balancer_type = "application"
+    tags = {
+      Name = "backend-alb"
+    }
   }
 }
 alb_subnets_x = {
   public_1a = { subnet_name = "public-subnet-1a" }
   public_1b = { subnet_name = "public-subnet-1b" }
+  backend = { subnet_name = "backend-subnet" }
+}
+
+tgs_x = {
+  "frontend-tg" = {
+    name = "frontend-tg"
+    port = 80
+    protocol = "HTTP"
+  }
+  "backend-tg" = {
+    name = "backend-tg"
+    port = 8000
+    protocol = "HTTP"
+  }
+}
+listener_alb_x = {
+  "frontend-listener" = {
+    port = 80
+    protocol = "HTTP"
+    tg_name = "frontend-tg"
+    alb_name = "frontend-alb"
+  }
+  "backend-listener" = {
+    port = 80
+    protocol = "HTTP"
+    tg_name = "backend-tg"
+    alb_name = "backend-alb"
+  }
+}
+tg_attachments_x = {
+  "frontend-attachment" = {
+    tg_name = "frontend-tg"
+    ec2_name = "frontend-host"
+    port = 80
+  }
+  "backend-attachment" = {
+    tg_name = "backend-tg"
+    ec2_name = "backend-host"
+    port = 8000
+  }
+}
+dbsql_x = {
+  "db" = {
+    identifier = "mssql-db"
+    username = "Jaydeepc1985"
+    password = "Oneday123#"
+    engine = "sqlserver-ex"
+    instance_class = "db.t3.micro"
+        
+  }
+}
+db-subnet-group_x = {
+  "db-subnet-gr" = {
+    name = "db-subnet-group"
+    db-1 = { subnet_name = "db-subnet1" }
+    db-2 = { subnet_name = "db-subnet2" }
+    
+  }
 }

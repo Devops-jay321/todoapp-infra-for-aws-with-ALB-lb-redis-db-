@@ -1,10 +1,13 @@
 data "aws_lb_target_group" "tg" {
-  name = "frontend-tg"
-}
+  for_each = var.tg_attachments
+    name = each.value.tg_name
+    }
+
 data "aws_instance" "ec2" {
+  for_each = var.tg_attachments
     filter {
         name   = "tag:Name"
-        values = ["frontend-host"]
+        values = [each.value.ec2_name]
     }
      filter {
     name   = "instance-state-name"

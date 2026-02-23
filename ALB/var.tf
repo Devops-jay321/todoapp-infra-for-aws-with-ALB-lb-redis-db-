@@ -3,6 +3,7 @@ variable "albgw" {
     name = string
     subnet_keys = list(string)
     load_balancer_type = string
+    tags = map(string)
   }))
 }
 variable "alb_subnets" {

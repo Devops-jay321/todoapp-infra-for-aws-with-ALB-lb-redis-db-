@@ -8,7 +8,7 @@ resource "aws_lb" "alb" {
     for subnet_key in each.value.subnet_keys :
     data.aws_subnet.subnets[subnet_key].id
   ]
-  tags = {
-    Name = "alb"
-  }
+  tags = each.value.tags
+  
 }
+

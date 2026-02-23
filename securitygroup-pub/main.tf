@@ -23,6 +23,19 @@ resource "aws_security_group" "bastion_sg" {
       ]
     }
   }
+   dynamic "ingress" {
+    for_each = each.key == "backend-sg" ? [1] : []
+
+    content {
+      description     = "HTTP from ALB"
+      from_port       = 8000
+      to_port         = 8000
+      protocol        = "tcp"
+      security_groups = [
+        aws_security_group.alb_sg["alb-sg"].id
+      ]
+    }
+  }
 
   egress {
     from_port   = 0
@@ -31,7 +44,6 @@ resource "aws_security_group" "bastion_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags=each.value.tags
-  depends_on = [ aws_security_group.alb_sg ]
 }
 resource "aws_security_group" "alb_sg" {
   for_each = var.alb_sg
@@ -53,4 +65,15 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags=each.value.tags
+}
+resource "aws_security_group_rule" "db_from_backend" {
+
+  type = "ingress"
+
+  from_port = 1433
+  to_port   = 1433
+  protocol  = "tcp"
+
+  security_group_id        = aws_security_group.bastion_sg["db-sg"].id
+  source_security_group_id = aws_security_group.bastion_sg["backend-sg"].id
 }

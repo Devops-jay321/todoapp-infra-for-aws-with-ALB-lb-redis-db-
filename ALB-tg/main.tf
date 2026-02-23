@@ -1,7 +1,8 @@
 resource "aws_lb_target_group" "frontend_tg" {
-  name     = "frontend-tg"
-  port     = 80
-  protocol = "HTTP"
+  for_each = var.tgs
+  name     = each.value.name
+  port     = each.value.port
+  protocol = each.value.protocol
   vpc_id   = data.aws_vpc.main_vpc.id   # ← change if using data source
 
   health_check {

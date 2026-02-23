@@ -56,10 +56,61 @@ variable "albgw_x" {
     name = string
     subnet_keys = list(string)
     load_balancer_type = string
+    tags = map(string)
   }))
 }
 variable "alb_subnets_x" {
   type = map(object({
     subnet_name = string
+  }))
+}
+variable "tgs_x" {
+  description = "Target groups for ALB"
+  type        = map(object({
+    name     = string
+    port     = number
+    protocol = string
+  }))
+}
+variable "listener_alb_x" {
+  description = "Listener for ALB"
+  type        = map(object({
+    port     = number
+    protocol = string
+    tg_name  = string
+    alb_name = string
+  }))
+  
+}
+variable "tg_attachments_x" {
+  type = map(object({
+    tg_name  = string
+    ec2_name = string
+    port     = number
+  }))
+  
+}
+variable "dbsql_x" {
+    type =map(object({
+        identifier = string
+        username = string
+        password = string
+        engine = string
+        instance_class = string 
+      
+    }))
+  
+}
+variable "db-subnet-group_x" {
+  type = map(object({
+    name = string
+
+    db-1 = object({
+      subnet_name = string
+    })
+
+    db-2 = object({
+      subnet_name = string
+    })
   }))
 }

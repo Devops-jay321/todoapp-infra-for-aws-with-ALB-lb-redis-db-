@@ -1,6 +1,8 @@
 data "aws_lb" "alb" {
-  name = "jay-alb"
+  for_each = var.listener_alb
+  name = each.value.alb_name
 }
 data "aws_lb_target_group" "tg" {
-  name = "frontend-tg"
+  for_each = var.listener_alb
+  name = each.value.tg_name
 }

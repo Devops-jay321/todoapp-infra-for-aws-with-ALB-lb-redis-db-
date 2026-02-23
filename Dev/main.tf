@@ -46,6 +46,7 @@ module "bastion" {
 }
 module "alb_tg" {
     source = "../ALB-tg"
+    tgs = var.tgs_x
     depends_on = [ module.vpc, module.bastion ]
   
 }
@@ -57,9 +58,23 @@ module "albgw" {
 }
 module "lstnr" {
   source = "../listener-alb"
+    listener_alb = var.listener_alb_x
   depends_on = [ module.albgw, module.alb_tg ]
 }
 module "tg-attachment" {
   source = "../tg-attachment"
+  tg_attachments = var.tg_attachments_x
   depends_on = [ module.albgw, module.alb_tg, module.lstnr ]
+}
+module "subnet-group" {
+  source = "../db-subnet-group"
+  db-subnet-group = var.db-subnet-group_x
+  depends_on = [ module.subnet ]
+  
+}
+module "mssql" {
+  source = "../mssqldb"
+  dbsql = var.dbsql_x
+  depends_on = [ module.vpc, module.subnet-group, module.securitygroup-pub ]
+  
 }

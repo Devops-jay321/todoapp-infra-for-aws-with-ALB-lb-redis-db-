@@ -78,3 +78,7 @@ module "mssql" {
   depends_on = [ module.vpc, module.subnet-group, module.securitygroup-pub ]
   
 }
+module "sg_rule" {
+  source = "../Sg_rule"
+  depends_on = [ module.securitygroup-pub ]
+}

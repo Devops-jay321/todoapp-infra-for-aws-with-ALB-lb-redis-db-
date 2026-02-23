@@ -3,12 +3,15 @@ resource "aws_security_group" "bastion_sg" {
   name   = each.value.name
   vpc_id = data.aws_vpc.main_vpc.id
 
-  ingress {
+  dynamic "ingress" {
+    for_each = each.key == "bastion-sg" ? [1] : []
+    content {
     description = "SSH from my laptop"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]   # ← change this
+  }
   }
    dynamic "ingress" {
     for_each = each.key == "frontend-sg" ? [1] : []
@@ -65,15 +68,4 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags=each.value.tags
-}
-resource "aws_security_group_rule" "db_from_backend" {
-
-  type = "ingress"
-
-  from_port = 1433
-  to_port   = 1433
-  protocol  = "tcp"
-
-  security_group_id        = aws_security_group.bastion_sg["db-sg"].id
-  source_security_group_id = aws_security_group.bastion_sg["backend-sg"].id
 }
